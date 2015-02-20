@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+# tomcat This starts and stops the Tomcat Process
+# chkconfig: 345 98 11
+# description: Start/Stop the Tomcat Process
+# processname: tomcat
+
+# Source Function Libary
+. /etc/init.d/functions
+
+TOMCAT_USER=neurostar
+TOMCAT_HOME=/srv/tomcat
+TOMCAT=$TOMCAT_HOME/bin/startup.sh
+LOCKFILE=/srv/tomcat/logs/tomcat
+PIDFILE=/srv/tomcat/logs/tomcat.pid
+PATH=$PATH:/bin:/usr/bin # For su
+
+[ -f $TOMCAT ] || exit 0
+RETVAL=0
+
+start(){
+  umask 077
+  echo -n $"Starting Tomcat: "
+  su - $TOMCAT_USER -c "cd $TOMCAT_HOME;./bin/startup.sh"
+  RETVAL=$?
+  echo
+  [ $RETVAL -eq 0 ] && touch $LOCKFILE
+  return $RETVAL
+}
+stop(){
+  echo -n $"Stopping Tomcat: "
+  su - $TOMCAT_USER -c "/usr/bin/killall -9 java"
+  su - $TOMCAT_USER -c "rm -rf /srv/tomcat/work/Catalina"
+  sleep 20
+  RETVAL=$?
+  echo
+  [ $RETVAL -eq 0 ] && rm -f $LOCKFILE
+  return $RETVAL
+}
+
+# See how we were called.
+case "$1" in
+  start)
+  start
+  ;;
+  stop)
+  stop
+  ;;
+  restart)
+  stop
+  start
+  ;;
+  *)
+  echo $"Usage: $0 {start|stop|restart}"
+  exit 2
+esac
+
+exit $RETVAL

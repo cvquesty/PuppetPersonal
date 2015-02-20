@@ -1,0 +1,99 @@
+#!/bin/bash
+#
+# apache This starts and stops the Apache Process
+# chkconfig: - 85 15
+# description: Start/Stop the Apache Process
+# processname: httpd
+# config: /srv/apache/conf/httpd.conf
+# pidfile: /srv/apache/log/httpd.pid
+### BEGIN INIT INFO
+# Provides: httpd
+# Required-Start: $local_fs $remote_fs $network $named
+# Required-Stop: $local_fs $remote_fs $network
+# Should-Start: distcache
+# Short-Description: start and stop Apache HTTP Server
+# Description: The Apache HTTP Server is an extensible server
+#  implementing the current HTTP standards.
+### END INIT INFO
+
+# Source Function Libary
+. /etc/init.d/functions
+
+HTTPD_LANG=${HTTPD_LANG-"C"}
+apachectl=/srv/apache/bin/apachectl
+httpd=/srv/apache/bin/httpd
+prog=httpd
+pidfile=${PIDFILE-/srv/apache/logs/httpd.pid}
+lockfile=${LOCKFILE-/srv/apache/logs/httpd}
+RETVAL=0
+STOP_TIMEOUT=${STOP_TIMEOUT-10}
+PATH=$PATH:/bin:/usr/bin # For su
+
+start(){
+  echo -n $"Starting Apache: "
+  LANG=$HTTPD_LANG daemon --pidfile=${pidfile} $httpd $OPTIONS
+  RETVAL=$?
+  echo
+  [ $RETVAL = 0 ] && touch ${lockfile}
+  return $RETVAL
+}
+stop(){
+  echo -n $"Stopping Apache: "
+  killproc -p ${pidfile} -d ${STOP_TIMEOUT} $httpd
+  RETVAL=$?
+  echo
+  [ $RETVAL = 0 ] && rm -f ${lockfile} ${pidfile}
+  return $RETVAL
+}
+reload(){
+    echo -n $"Reloading Apache: "
+    if ! LANG=$HTTPD_LANG $httpd $OPTIONS -t >&/dev/null; then
+        RETVAL=6
+        echo $"not reloading due to configuration syntax error"
+        failure $"not reloading $httpd due to configuration syntax error"
+    else
+        # Force LSB behaviour from killproc
+        LSB=1 killproc -p ${pidfile} $httpd -HUP
+        RETVAL=$?
+        if [ $RETVAL -eq 7 ]; then
+            failure $"httpd shutdown"
+        fi
+    fi
+    echo
+}
+
+# See how we were called.
+case "$1" in
+  start)
+  start
+  ;;
+  stop)
+  stop
+  ;;
+  status)
+    status -p ${pidfile} $httpd
+    RETVAL=$?
+  ;;
+  restart)
+  stop
+  start
+  ;;
+condrestart|try-restart)
+  if status -p ${pidfile} $httpd >&/dev/null; then
+    stop
+    start
+  fi
+  ;;
+  force-reload|reload)
+        reload
+  ;;
+  graceful|help|configtest|fullstatus)
+  $apachectl $@
+  RETVAL=$?
+  ;;
+  *)
+  echo $"Usage: $prog {start|stop|restart|condrestart|try-restart|force-reload|reload|status|fullstatus|graceful|help|configtest}"
+  RETVAL=2
+esac
+
+exit $RETVAL

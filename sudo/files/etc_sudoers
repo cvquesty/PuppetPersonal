@@ -1,0 +1,54 @@
+##################################################
+## This File Managed by Puppet.  DO NOT EDIT!!! ##
+##################################################
+##
+Defaults  env_reset
+Defaults  listpw=never
+Defaults  syslog=auth
+Defaults  !lecture
+Defaults  log_year, logfile=/var/log/sudo.log
+Defaults  mail_badpass
+Defaults  mail_no_perms
+Defaults  mail_no_user
+Defaults  mail_no_host
+Defaults  mailto="itoperations@accelarad.com"
+
+# Define Groups of users
+User_Alias      ADMINS          = jsheets, levans, kgordon
+User_Alias      NEUROSTAR       = neurostar
+User_Alias      XYMON_USER      = xymon
+
+# Define Groups of Hosts
+Host_Alias      ADMIN_HOSTS     = i-lnxops01vm, i-ldap
+Host_Alias      XYMON_HOSTS     = ALL
+
+# Define Groups of Allowed Commands
+Cmnd_Alias      ACCTCMDS        = /usr/bin/useradd, /usr/bin/userdel, /usr/bin/usermod, /bin/passwd, \
+                                  /usr/sbin/adduser, /usr/sbin/vipw, /usr/sbin/groupadd, /usr/sbin/groupdel
+
+Cmnd_Alias      SHELLS          = /bin/bash, /bin/csh, /bin/dash, /bin/sh, /bin/tcsh
+
+Cmnd_Alias      BAD_JUJU        = /usr/sbin/killall
+
+Cmnd_Alias      SU              = /bin/su, /usr/bin/su, /usr/bin/sudo, /usr/sbin/visudo
+
+Cmnd_Alias      NO_SHELLS       = ALL, !SHELLS, !SU, !ACCTCMDS, BAD_JUJU
+
+Cmnd_Alias      LOGS            = /usr/bin/tail
+
+Cmnd_Alias      TCPDUMP         = /usr/sbin/tcpdump
+
+Cmnd_Alias      HTTPD           = /etc/init.d/httpd start, /etc/init.d/httpd stop, /sbin/service httpd start, \
+                                  /sbin/service httpd stop
+
+Cmnd_Alias      XYMON_CMDS      = /etc/init.d/xymon start, /etc/init.d/xymon stop, /sbin/service xymon start, \
+                                  /sbin/service xymon stop, /bin/rm
+
+# Define User Allowances
+
+root            ALL             = (ALL) ALL
+ADMINS          ALL             = (ALL) NOPASSWD: ALL
+%admins         ALL             = (ALL) NOPASSWD: ALL
+NEUROSTAR       ALL             = (ALL) ALL
+
+XYMON_USER      XYMON_HOSTS     = NOPASSWD: XYMON_CMDS

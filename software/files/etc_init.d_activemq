@@ -1,0 +1,57 @@
+#!/bin/bash
+#
+# ActiveMQ This starts and stops the ActiveMQ Process
+# chkconfig: 345 98 11
+# description: Start/Stop the ActiveMQ Process
+# processname: activemq
+
+# Source Function Libary
+. /etc/init.d/functions
+. /etc/profile.d/java.sh
+
+ACTIVEMQ_HOME=/srv/apache-activemq-5.8.0
+ACTIVEMQ=$ACTIVEMQ_HOME/bin/activemq
+LOCKFILE=/var/lock/subsys/activemq
+PIDFILE=/var/run/qctivemq.pid
+PATH=$PATH:/bin:/usr/bin # For su
+
+[ -f $ACTIVEMQ ] || exit 0
+RETVAL=0
+
+start(){
+  umask 077
+  echo -n $"Starting Apache ActiveMQ: "
+    /srv/amq/bin/activemq start
+  RETVAL=$?
+  echo
+  [ $RETVAL -eq 0 ] && touch $LOCKFILE
+  return $RETVAL
+}
+stop(){
+  echo -n $"Stopping ActiveMQ: "
+    /srv/amq/bin/activemq stop
+  sleep 20
+  RETVAL=$?
+  echo
+  [ $RETVAL -eq 0 ] && rm -f $LOCKFILE
+  return $RETVAL
+}
+
+# See how we were called.
+case "$1" in
+  start)
+  start
+  ;;
+  stop)
+  stop
+  ;;
+  restart)
+  stop
+  start
+  ;;
+  *)
+  echo $"Usage: $0 {start|stop|restart}"
+  exit 2
+esac
+
+exit $RETVAL

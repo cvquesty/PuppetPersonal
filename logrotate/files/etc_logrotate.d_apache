@@ -1,0 +1,7 @@
+/srv/apache/logs/*log {
+  sharedscripts
+  compress
+  postrotate
+    /sbin/service apache graceful > /dev/null 2>/dev/null || true
+  endscript
+}

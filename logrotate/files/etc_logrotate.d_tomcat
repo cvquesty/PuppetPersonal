@@ -1,0 +1,6 @@
+/srv/tomcat/logs/catalina.out {
+  daily
+  rotate 7
+  copytruncate
+  compress
+}

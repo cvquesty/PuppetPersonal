@@ -1,0 +1,42 @@
+#!/bin/bash
+# This file managed by Puppet.  DO NOT EDIT.
+#
+# Xymon Server init script
+#
+# chkconfig: - 99 45
+# description: Xymon monitoring server is\ # used to monitor Questy's Systems
+# probe: true
+
+# Source Function library
+. /etc/rc.d/init.d/functions
+
+# Source Networking configuration
+. /etc/sysconfig/network
+
+# Check that Networking is Up
+[ "${NETWORKING}" = "no" ] && exit 0
+
+PATH=$PATH:/bin:/usr/bin	# For su
+XYMONHOME=/home/xymon
+XYMONUSER=xymon
+
+case "$1" in
+start)
+   su - $XYMONUSER -c "cd $XYMONHOME;./client/runclient.sh start"
+   ;;
+restart)
+   su - $XYMONUSER -c "cd $XYMONHOME;./client/runclient.sh restart"
+   ;;
+stop)
+   su - $XYMONUSER -c "cd $XYMONHOME;./client/runclient.sh stop"
+   ;;
+status)
+   su - $XYMONUSER -c "cd $XYMONHOME;./client/runclient.sh status"
+   ;;
+*)
+   echo "Usage: $0 {start|stop|restart|status}"
+   exit 1
+   ;;
+esac
+
+exit 0

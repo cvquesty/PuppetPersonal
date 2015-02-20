@@ -1,0 +1,6 @@
+/srv/tomcat/logs/turboreceiver.log {
+  daily
+  rotate 7
+  copytruncate
+  compress
+}

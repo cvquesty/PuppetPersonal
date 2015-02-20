@@ -1,0 +1,4 @@
+# This file managed by Puppet.  DO NOT EDIT.
+search internap.nsirad.com corporate.nsirad.com
+nameserver 10.212.212.157
+nameserver 10.112.112.157

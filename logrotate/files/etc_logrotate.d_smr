@@ -1,0 +1,6 @@
+/srv/tomcat/logs/smr.log {
+  daily
+  rotate 7
+  copytruncate
+  compress
+}

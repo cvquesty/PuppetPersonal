@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/bin/puppet agent --server=<SERVERNAME> --no-daemonize --verbose --onetime >/dev/null 2>&1

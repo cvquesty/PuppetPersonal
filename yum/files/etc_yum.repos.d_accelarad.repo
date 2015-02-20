@@ -1,0 +1,4 @@
+[accelarad]
+name=Accelarad-$releasever - Corporate Repository
+baseurl=http://yum.internap.nsirad.com/repo/CentOS/6/$basearch
+gpgcheck = 0
